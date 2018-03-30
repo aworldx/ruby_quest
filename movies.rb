@@ -1,15 +1,29 @@
 require 'csv'
 require 'ostruct'
+require 'date'
 
 def perform_movie_lib(file_name)
   lib = Array.new
   keys = [:link, :title, :year, :country, :premiere_date, :genre, :durability, :rate, :producer, :actors]
 
-  CSV.foreach(file_name, {headers: keys, col_sep: '|'}) do |row|
-    lib << OpenStruct.new(row.to_hash)
+  options = { headers: keys, converters: [:date], col_sep: '|' }
+
+  CSV.foreach(file_name, options) do |row|
+    struct = OpenStruct.new(row.to_hash)
+    parse_date(struct) if struct.premiere_date.is_a?(String)
+    lib << struct
   end
 
   lib
+end
+
+def parse_date(struct)
+  date = struct.premiere_date
+  date_parts = date.split('-')
+  add_parts = ['-01-01', '-01']
+  
+  date += add_parts.fetch(date_parts.size-1, '')
+  struct.premiere_date = Date.parse(date)
 end
 
 def show_movies(movies)
@@ -34,3 +48,9 @@ puts 'producers'
 puts movie_lib.map { |m| m.producer.split.last }.uniq.sort
 print 'foreign movies count '
 puts movie_lib.reject { |m| m.country.include?('USA') }.size
+puts 'movies by months'
+months_stat = movie_lib.group_by { |m| m.premiere_date.month }
+months_stat.keys.sort.each do |month| 
+  puts "#{Date::MONTHNAMES[month]}: #{months_stat[month].size}"
+end
+
