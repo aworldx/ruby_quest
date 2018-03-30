@@ -9,19 +9,19 @@ def perform_movie_lib(file_name)
 
   CSV.foreach(file_name, options) do |row|
     struct = OpenStruct.new(row.to_hash)
-    struct.premiere_date = parse_date(struct.premiere_date) if struct.premiere_date.is_a?(String)
+    struct.premiere_date = format_date(struct.premiere_date) if struct.premiere_date.is_a?(String)
     lib << struct
   end
 
   lib
 end
 
-def parse_date(string)
-  date_parts = string.split('-')
+def format_date(date)
+  date_parts = date.split('-')
   add_parts = ['-01-01', '-01']
   
-  string += add_parts.fetch(date_parts.size-1, '')
-  Date.parse(string)
+  date += add_parts.fetch(date_parts.size-1, '')
+  Date.parse(date)
 end
 
 def show_movies(movies)
