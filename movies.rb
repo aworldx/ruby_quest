@@ -1,5 +1,3 @@
-require 'byebug'
-
 def perform_movie_lib(file_name)
   lib = Array.new
 
