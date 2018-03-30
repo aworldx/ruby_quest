@@ -1,6 +1,5 @@
 require 'csv'
 require 'ostruct'
-require 'date'
 
 def perform_movie_lib(file_name)
   lib = Array.new
