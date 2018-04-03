@@ -32,7 +32,7 @@ class MovieCollection
 
   def filter(options)
     @movies.select do |movie|
-      field_value = movie.send(options.keys.first).include?(options.values.first)
+      movie.send(options.keys.first).include?(options.values.first)
     end  
   end
 
