@@ -2,12 +2,17 @@ require 'csv'
 require './movie'
 
 class MovieCollection
-  def initialize(file_name)
-    @movies = []
-    keys = [:link, :title, :year, :country, :premiere_date, :genre, :durability, :rate, :producer, :actors]
-      
-    options = { headers: keys, converters: [:date], col_sep: '|' }
-      
+  def initialize()
+    @movies = []   
+  end
+
+  def collection_fields
+    [:link, :title, :year, :country, :premiere_date, :genre, :durability, :rate, :producer, :actors]
+  end
+
+  def read_from_file(file_name)
+    options = { headers: collection_fields, converters: [:date], col_sep: '|' }
+    
     CSV.foreach(file_name, options) do |row|
       row[:durability] = row[:durability].to_i
       row[:genre] = row[:genre].split(',')
@@ -17,26 +22,39 @@ class MovieCollection
       movie = Movie.new(row.to_hash)      
       @movies << movie
     end
+
+    @movies
   end
 
   def all
     @movies
   end
 
-  def sort_by(sort_field)
-    @movies.sort_by do |movie| 
-      field_value = movie.send(sort_field)
-      field_value.is_a?(Array) ? field_value.first : field_value
+  def sort_by(*args)  
+    missing_fields = args - collection_fields
+    raise ArgumentError, "Sorting by field #{missing_fields.to_s} is not possible" unless missing_fields.empty?
+
+    @movies.sort_by do |movie|
+      args.map do |sort_field|
+        field_value = movie.send(sort_field)
+        field_value.is_a?(Array) ? field_value.first : field_value
+      end
     end
   end
 
   def filter(options)
+    options.keys.each do |key|
+      raise ArgumentError, "Filtering by field #{key} is not possible" unless collection_fields.include?(key)
+    end
+
     @movies.select do |movie|
       movie.send(options.keys.first).include?(options.values.first)
     end  
   end
 
   def stats(stat_field)
+    raise ArgumentError, "Stats by field #{stat_field} is not possible" unless collection_fields.include?(stat_field)
+
     stat = {}
     groups = @movies.group_by { |movie| movie.send(stat_field) }
     
