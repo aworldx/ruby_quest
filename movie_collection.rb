@@ -1,5 +1,9 @@
 require 'csv'
 require './movie'
+require './new_movie'
+require './ancient_movie'
+require './classic_movie'
+require './modern_movie'
 
 class MovieCollection
   def initialize()
@@ -14,12 +18,23 @@ class MovieCollection
     options = { headers: collection_fields, converters: [:date], col_sep: '|' }
     
     CSV.foreach(file_name, options) do |row|
+      row[:year] = row[:year].to_i
       row[:durability] = row[:durability].to_i
       row[:genre] = row[:genre].split(',')
       row[:actors] = row[:actors].split(',')
       row[:premiere_date] = format_date(row[:premiere_date]) if row[:premiere_date].is_a?(String)
 
-      movie = Movie.new(row.to_hash)      
+      case row[:year]
+      when 0..1944
+        movie = AncientMovie.new(row.to_hash)
+      when 1945..1967
+        movie = ClassicMovie.new(row.to_hash, self)
+      when 1968..1999
+        movie = ModernMovie.new(row.to_hash)
+      else
+        movie = NewMovie.new(row.to_hash)
+      end
+
       @movies << movie
     end
 
