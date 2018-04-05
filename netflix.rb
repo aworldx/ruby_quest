@@ -3,7 +3,8 @@ class Netflix
     @movie_collection = movie_collection
   end
 
-  def show
-    "Now showing: (название выбранного кина) (время начала) - (время окончания)"
+  def show(options)
+    @movie_collection.filter(options)   
+    # "Now showing: (название выбранного кина) (время начала) - (время окончания)"
   end
 end

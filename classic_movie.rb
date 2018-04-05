@@ -2,6 +2,7 @@ class ClassicMovie < Movie
   def initialize(options, movie_collection)
     super(options)
     @movie_collection = movie_collection
+    @period = :classic
   end
 
   def to_s

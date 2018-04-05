@@ -10,12 +10,16 @@ class MovieCollection
     @movies = []   
   end
 
-  def collection_fields
+  def file_fields
     [:link, :title, :year, :country, :premiere_date, :genre, :durability, :rate, :producer, :actors]
   end
 
+  def collection_fields
+    [:link, :title, :year, :country, :premiere_date, :genre, :durability, :rate, :producer, :actors, :period]
+  end
+
   def read_from_file(file_name)
-    options = { headers: collection_fields, converters: [:date], col_sep: '|' }
+    options = { headers: file_fields, converters: [:date], col_sep: '|' }
     
     CSV.foreach(file_name, options) do |row|
       row[:year] = row[:year].to_i
@@ -57,22 +61,17 @@ class MovieCollection
     end
   end
 
-  def filter(*args)
-    missing_fields = args.first.keys - collection_fields
+  def filter(options)
+    raise ArgumentError, "Filter: options must have hash type" unless options.is_a?(Hash)
+    missing_fields = options.keys - collection_fields
     raise ArgumentError, "Filtering by field #{missing_fields} is not possible" unless missing_fields.empty?
 
     @movies.select do |movie|
-      # movie.send(options.keys.first).include?(options.values.first)
-      # movie.to_h >= args.first
-      h = movie.to_h
-      f = true
-      f && args.first.each do |key, value|
-        if h[key].is_a?(Array)
-          h[key].include?(value) 
-        else
-          h[key] == value if h[key]
-        end
+      selected_fields = options.map do |key, value|
+        movie_attr = movie.send(key)
+        movie_attr.is_a?(Array) ? movie_attr.include?(value) : movie_attr == value
       end
+      !selected_fields.include?(false)
     end  
   end
 

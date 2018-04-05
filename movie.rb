@@ -1,7 +1,7 @@
 class Movie
   attr_accessor :link, :title, :year, :country,
     :premiere_date, :genre, :durability, :rate,
-    :producer, :actors
+    :producer, :actors, :period
 
   def initialize(options)
     @link = options[:link]
