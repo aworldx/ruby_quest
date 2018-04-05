@@ -3,10 +3,10 @@ require './movie_collection'
 movies = MovieCollection.new()
 movies.read_from_file('movies.txt')
 
-puts movies
-puts movies.all
+# puts movies
+# puts movies.all
 # puts movies.sort_by(:genre, :year)
-# puts movies.filter(year: '1921')
+puts movies.filter(year: 1997, genre: 'Comedy')
 # puts movies.stats(:producer)
 # puts movies.all.first.actors
 

@@ -57,13 +57,22 @@ class MovieCollection
     end
   end
 
-  def filter(options)
-    options.keys.each do |key|
-      raise ArgumentError, "Filtering by field #{key} is not possible" unless collection_fields.include?(key)
-    end
+  def filter(*args)
+    missing_fields = args.first.keys - collection_fields
+    raise ArgumentError, "Filtering by field #{missing_fields} is not possible" unless missing_fields.empty?
 
     @movies.select do |movie|
-      movie.send(options.keys.first).include?(options.values.first)
+      # movie.send(options.keys.first).include?(options.values.first)
+      # movie.to_h >= args.first
+      h = movie.to_h
+      f = true
+      f && args.first.each do |key, value|
+        if h[key].is_a?(Array)
+          h[key].include?(value) 
+        else
+          h[key] == value if h[key]
+        end
+      end
     end  
   end
 
