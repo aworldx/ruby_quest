@@ -2,7 +2,7 @@ class NewMovie < Movie
   def initialize(options)
     super
     @years_from_production = Time.now.year - @year
-    @period = :new 
+    @period = :new
   end
   
   def to_s

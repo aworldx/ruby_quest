@@ -4,6 +4,7 @@ require './new_movie'
 require './ancient_movie'
 require './classic_movie'
 require './modern_movie'
+require 'byebug'
 
 class MovieCollection
   def initialize()
@@ -15,7 +16,7 @@ class MovieCollection
   end
 
   def collection_fields
-    [:link, :title, :year, :country, :premiere_date, :genre, :durability, :rate, :producer, :actors, :period]
+    file_fields << :period
   end
 
   def read_from_file(file_name)
@@ -61,15 +62,24 @@ class MovieCollection
     end
   end
 
-  def filter(options)
-    raise ArgumentError, "Filter: options must have hash type" unless options.is_a?(Hash)
-    missing_fields = options.keys - collection_fields
+  def filter(search)
+    raise ArgumentError, "Filter: search must have hash type" unless search.is_a?(Hash)
+    missing_fields = search.keys - collection_fields
     raise ArgumentError, "Filtering by field #{missing_fields} is not possible" unless missing_fields.empty?
 
     @movies.select do |movie|
-      selected_fields = options.map do |key, value|
-        movie_attr = movie.send(key)
-        movie_attr.is_a?(Array) ? movie_attr.include?(value) : movie_attr == value
+      selected_fields = search.map do |search_key, search_value|
+        movie_attr_value = movie.send(search_key)
+        
+        if movie_attr_value.is_a?(Array)
+          if search_value.is_a?(Array)
+            (movie_attr_value & search_value).size > 0
+          else
+            movie_attr_value.include?(search_value)
+          end
+        else 
+          movie_attr_value == search_value
+        end
       end
       !selected_fields.include?(false)
     end  

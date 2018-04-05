@@ -1,5 +1,6 @@
 class AncientMovie < Movie
   def initialize(options)
+    super(options)
     @period = :ancient
   end
 

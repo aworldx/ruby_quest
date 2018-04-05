@@ -1,5 +1,6 @@
 class ModernMovie < Movie
   def initialize(options)
+    super(options)
     @period = :modern
   end
 
