@@ -51,4 +51,3 @@ months_stat = movie_lib.group_by { |m| m.premiere_date.month }
 months_stat.keys.sort.each do |month| 
   puts "#{Date::MONTHNAMES[month]}: #{months_stat[month].size}"
 end
-

@@ -1,25 +1,24 @@
-require 'byebug'
-
 class Netflix
+  attr_reader :account
+
   def initialize(movie_collection)
     @movie_collection = movie_collection
     @account = 0
   end
 
   def show(options)
-    @now_showing = @movie_collection.filter(options).sample
+    movies = 5.times.map { @movie_collection.filter(options).sample }
+    now_showing = movies.sort_by { |m| -m.rate }.first
 
-    if @now_showing
-      unless charge(@now_showing.period)
-        puts "Insufficient funds on the account. You have #{@account}.
-          You need #{price(@now_showing.period)}"
-        return
-      end
+    if now_showing
+      raise "Insufficient funds on the account" unless charge(now_showing.period)
 
-      puts "Now showing: #{@now_showing.title} 21.00 - 23.00"
+      puts "Netflix now showing: #{now_showing.title} 21.00 - 23.00"
     else
       puts 'Sorry, we did not find the movie on your request'
     end
+
+    now_showing
   end
 
   def pay(money)

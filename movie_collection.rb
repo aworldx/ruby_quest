@@ -4,7 +4,6 @@ require './new_movie'
 require './ancient_movie'
 require './classic_movie'
 require './modern_movie'
-require 'byebug'
 
 class MovieCollection
   def initialize()

@@ -1,18 +1,16 @@
-require 'byebug'
-
 class Theatre
   def initialize(movie_collection)
     @movie_collection = movie_collection
   end
 
   def show(time)
-    movie = nil
+    schedule_item = schedule.select { |item| item === time.hour }
 
-    schedule.each do |hour_range, search|
-      movie = @movie_collection.filter(search).sample if hour_range.cover?(time.hour)
-    end
+    movies = 5.times.map { @movie_collection.filter(schedule_item.values[0]).sample }
+    now_showing = movies.sort_by { |m| -m.rate }.first
 
-    puts  "Now showing: #{movie.title} #{time.hour} - #{time.hour + 2}"
+    puts  "Theatre now showing: #{now_showing.title} #{time.hour} - #{time.hour + 2}"
+    now_showing
   end
 
   def schedule
@@ -29,6 +27,6 @@ class Theatre
       search[:title] = movie_title
       hr = hour_range if @movie_collection.filter(search).size > 0
     end
-    puts "We will show it in #{hr} o'clock"
+    puts "We will show \"#{movie_title}\" on #{hr} o'clock"
   end
 end
