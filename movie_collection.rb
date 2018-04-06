@@ -81,13 +81,13 @@ class MovieCollection
 
   def movie_attr_match_search_value?(movie_attr, search_value)
     if movie_attr.is_a?(Array)
-      search_value.is_a?(Array) ? arrays_intersect(movie_attr, search_value) : movie_attr.include?(search_value)
+      search_value.is_a?(Array) ? arrays_intersect?(movie_attr, search_value) : movie_attr.include?(search_value)
     else 
       movie_attr == search_value
     end
   end
 
-  def arrays_intersect(ar1, ar2)
+  def arrays_intersect?(ar1, ar2)
     (ar1 & ar2).size > 0
   end
 
