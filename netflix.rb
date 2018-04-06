@@ -7,8 +7,8 @@ class Netflix
   end
 
   def show(options)
-    movies = 5.times.map { @movie_collection.filter(options).sample }
-    now_showing = movies.sort_by { |m| -m.rate }.first
+    movies = @movie_collection.filter(options)
+    now_showing = movies.sort_by { |m| m.rate }.first
 
     if now_showing
       raise "Insufficient funds on the account" unless charge(now_showing.period)
@@ -36,11 +36,7 @@ class Netflix
 
   def charge(movie_period)
     cost = price(movie_period)
-    if @account >= cost
-      @account -= cost
-      return true
-    end
-    false
+    return @account >= cost && @account -= cost
   end
 
   def how_much?(movie_title)

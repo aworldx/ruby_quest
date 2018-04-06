@@ -66,22 +66,29 @@ class MovieCollection
     missing_fields = search.keys - collection_fields
     raise ArgumentError, "Filtering by field #{missing_fields} is not possible" unless missing_fields.empty?
 
-    @movies.select do |movie|
-      selected_fields = search.map do |search_key, search_value|
-        movie_attr_value = movie.send(search_key)
-        
-        if movie_attr_value.is_a?(Array)
-          if search_value.is_a?(Array)
-            (movie_attr_value & search_value).size > 0
-          else
-            movie_attr_value.include?(search_value)
-          end
-        else 
-          movie_attr_value == search_value
-        end
-      end
-      !selected_fields.include?(false)
+    @movies.reject do |movie|
+      # if at least one field does not match
+      fields_match(movie, search).include?(false)
     end  
+  end
+
+  def fields_match(movie, search)
+    search.map do |search_key, search_value|
+      movie_attr_value = movie.send(search_key)
+      movie_attr_match_search_value?(movie_attr_value, search_value)
+    end
+  end
+
+  def movie_attr_match_search_value?(movie_attr, search_value)
+    if movie_attr.is_a?(Array)
+      search_value.is_a?(Array) ? arrays_intersect(movie_attr, search_value) : movie_attr.include?(search_value)
+    else 
+      movie_attr == search_value
+    end
+  end
+
+  def arrays_intersect(ar1, ar2)
+    (ar1 & ar2).size > 0
   end
 
   def stats(stat_field)

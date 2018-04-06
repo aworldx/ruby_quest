@@ -6,8 +6,8 @@ class Theatre
   def show(time)
     schedule_item = schedule.select { |item| item === time.hour }
 
-    movies = 5.times.map { @movie_collection.filter(schedule_item.values[0]).sample }
-    now_showing = movies.sort_by { |m| -m.rate }.first
+    movies = @movie_collection.filter(schedule_item.values[0])
+    now_showing = movies.sort_by { |m| m.rate }.first
 
     puts  "Theatre now showing: #{now_showing.title} #{time.hour} - #{time.hour + 2}"
     now_showing
@@ -27,6 +27,6 @@ class Theatre
       search[:title] = movie_title
       hr = hour_range if @movie_collection.filter(search).size > 0
     end
-    puts "on #{hr} o'clock"
+    puts hr ? "on #{hr} o'clock" : "Sorry, we did not find the movie on your request"
   end
 end

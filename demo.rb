@@ -9,8 +9,7 @@ netflix = Netflix.new(movies)
 netflix.pay(100)
 
 begin
-  netflix.show(genre: 'Comedy', country: 'USA')
-  movie = netflix.show(genre: 'Comedy', period: :classic)
+  netflix.show(genre: 'Comedy')
 rescue => e
   puts e.message
 end
