@@ -28,6 +28,9 @@ RSpec.describe Theatre do
   end
 
   context ".when?" do
-
+    it "should show time when movie is showing" do
+      expect { @theatre.when?('Back to the Future') }.to output("on 13..20 o'clock\n").to_stdout
+      expect { @theatre.when?('The Thing') }.to output("on 21..23 o'clock\n").to_stdout
+    end
   end
 end

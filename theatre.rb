@@ -27,6 +27,6 @@ class Theatre
       search[:title] = movie_title
       hr = hour_range if @movie_collection.filter(search).size > 0
     end
-    puts "We will show \"#{movie_title}\" on #{hr} o'clock"
+    puts "on #{hr} o'clock"
   end
 end
