@@ -23,7 +23,7 @@ RSpec.describe Netflix do
       movie = nil
       expect do
         movie = @netflix.show(genre: 'Comedy', period: :classic) 
-      end.to change(@netflix, :account)
+      end.to change { @netflix.account }.from(40).to(40 - @netflix.price(:classic))
       
       expect(movie.genre).to include('Comedy')
       expect(movie.year).to be_between(1945, 1967).inclusive
@@ -39,8 +39,7 @@ RSpec.describe Netflix do
 
   context ".pay" do
     it "should increase money on account" do
-      @netflix.pay(40)
-      expect(@netflix.account).to eq(40)
+      expect { @netflix.pay(40) }.to change { @netflix.account }.from(0).to(40)
     end
   end
 end
