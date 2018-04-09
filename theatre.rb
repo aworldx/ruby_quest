@@ -9,8 +9,13 @@ class Theatre
     movies = @movie_collection.filter(schedule_item.values[0])
     now_showing = movies.sort_by { |m| m.rate }.first
 
-    puts  "Theatre now showing: #{now_showing.title} #{time.hour} - #{time.hour + 2}"
+    puts  "Theatre now showing: #{now_showing.title} #{show_time(schedule_item, now_showing)}"
     now_showing
+  end
+
+  def show_time(schedule_item, movie)
+    start_hour = rand(schedule_item.keys.first)
+    "#{start_hour}:00 - #{start_hour + movie.durability / 60}:#{(movie.durability % 60).to_s.rjust(2, '0')}"
   end
 
   def schedule

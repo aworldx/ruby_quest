@@ -18,12 +18,16 @@ RSpec.describe Netflix do
     end
     
     it "shows movies with passed attributes and reduce money on account" do
-      @netflix.pay(40)
-
-      movie = @netflix.show(genre: 'Comedy', period: :classic)
+      @netflix.pay(40) 
+      
+      movie = nil
+      expect do
+        movie = @netflix.show(genre: 'Comedy', period: :classic) 
+      end.to change(@netflix, :account)
+      
       expect(movie.genre).to include('Comedy')
       expect(movie.year).to be_between(1945, 1967).inclusive
-      expect(@netflix.account).to be < 40
+      expect(@netflix.account).to be < 40  
     end
   end
 
