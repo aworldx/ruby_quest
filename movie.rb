@@ -1,7 +1,7 @@
 class Movie
   attr_accessor :link, :title, :year, :country,
     :premiere_date, :genre, :durability, :rate,
-    :producer, :actors
+    :producer, :actors, :period
 
   def initialize(options)
     @link = options[:link]
@@ -27,5 +27,20 @@ class Movie
 
   def to_s
     "#{@title} (#{@premiere_date}; #{@genre}) - #{@durability}"
+  end
+
+  def to_h
+    {
+      link: @link,
+      title: @title,
+      year: @year,
+      country: @country,
+      premiere_date: @premiere_date,
+      genre: @genre,
+      durability: @durability,
+      rate: @rate,
+      producer: @producer,
+      actors: @actors
+    }
   end
 end
