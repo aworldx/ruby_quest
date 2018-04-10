@@ -6,8 +6,14 @@ require './classic_movie'
 require './modern_movie'
 
 class MovieCollection
+  include Enumerable
+
   def initialize()
-    @movies = []   
+    @movies = []
+  end
+
+  def each(&block)
+    @movies.each(&block)
   end
 
   def file_fields
@@ -20,7 +26,7 @@ class MovieCollection
 
   def read_from_file(file_name)
     options = { headers: file_fields, converters: [:date], col_sep: '|' }
-    
+
     CSV.foreach(file_name, options) do |row|
       row[:year] = row[:year].to_i
       row[:durability] = row[:durability].to_i
@@ -49,11 +55,11 @@ class MovieCollection
     @movies
   end
 
-  def sort_by(*args)  
+  def sort_by(*args)
     missing_fields = args - collection_fields
     raise ArgumentError, "Sorting by field #{missing_fields.to_s} is not possible" unless missing_fields.empty?
 
-    @movies.sort_by do |movie|
+    self.sort_by do |movie|
       args.map do |sort_field|
         field_value = movie.send(sort_field)
         field_value.is_a?(Array) ? field_value.first : field_value
@@ -66,10 +72,10 @@ class MovieCollection
     missing_fields = search.keys - collection_fields
     raise ArgumentError, "Filtering by field #{missing_fields} is not possible" unless missing_fields.empty?
 
-    @movies.reject do |movie|
+    self.reject do |movie|
       # if at least one field does not match
       fields_match(movie, search).include?(false)
-    end  
+    end
   end
 
   def fields_match(movie, search)
@@ -82,7 +88,7 @@ class MovieCollection
   def movie_attr_match_search_value?(movie_attr, search_value)
     if movie_attr.is_a?(Array)
       search_value.is_a?(Array) ? arrays_intersect?(movie_attr, search_value) : movie_attr.include?(search_value)
-    else 
+    else
       movie_attr == search_value
     end
   end
@@ -95,9 +101,9 @@ class MovieCollection
     raise ArgumentError, "Stats by field #{stat_field} is not possible" unless collection_fields.include?(stat_field)
 
     stat = {}
-    groups = @movies.group_by { |movie| movie.send(stat_field) }
-    
-    groups.keys.each do |key| 
+    groups = self.group_by { |movie| movie.send(stat_field) }
+
+    groups.keys.each do |key|
       stat[key] = groups[key].size
     end
 
@@ -107,7 +113,7 @@ class MovieCollection
   def format_date(date)
     date_parts = date.split('-')
     add_parts = ['-01-01', '-01']
-    
+
     date += add_parts.fetch(date_parts.size-1, '')
     Date.parse(date)
   end

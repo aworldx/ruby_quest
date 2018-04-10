@@ -1,6 +1,15 @@
+require './cashbox'
+
 class Theatre
+  include Cashbox
+
   def initialize(movie_collection)
     @movie_collection = movie_collection
+    @cash = 0
+  end
+
+  def buy_ticket
+    top_up_balance(55)
   end
 
   def show(time)

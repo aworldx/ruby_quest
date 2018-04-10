@@ -1,9 +1,11 @@
+require './cashbox'
+
 class Netflix
   attr_reader :account
+  extend Cashbox
 
   def initialize(movie_collection)
     @movie_collection = movie_collection
-    @account = 0
   end
 
   def show(options)
@@ -26,7 +28,7 @@ class Netflix
   end
 
   def pay(money)
-    @account += money
+    Netflix.top_up_balance(money)
   end
 
   def price(movie_period)
@@ -40,7 +42,7 @@ class Netflix
 
   def charge(movie_period)
     cost = price(movie_period)
-    return @account >= cost && @account -= cost
+    return Netflix.cash >= cost && @account -= cost
   end
 
   def how_much?(movie_title)
