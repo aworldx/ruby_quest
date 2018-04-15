@@ -4,10 +4,10 @@ require './netflix'
 
 RSpec.describe MyCinema::Netflix do
   before(:each) do
-    movies = MyCinema::MovieCollection.new()
-    movies.read_from_file('movies.txt')
+    @movies = MyCinema::MovieCollection.new()
+    @movies.read_from_file('movies.txt')
 
-    @netflix = MyCinema::Netflix.new(movies)
+    @netflix = MyCinema::Netflix.new(@movies)
   end
 
   context ".show" do
@@ -51,6 +51,16 @@ RSpec.describe MyCinema::Netflix do
 
     it "who = suspicious person" do
       expect { MyCinema::Netflix.take("somebody") }.to raise_error("u-u-u-u-u-u-u")
+    end
+  end
+
+  context ".cash" do
+    it "should return common cash for all netflix" do
+      @netflix2 = MyCinema::Netflix.new(@movies)
+      expect do 
+        @netflix.pay(10)
+        @netflix2.pay(10)
+      end.to change { MyCinema::Netflix.cash }.from(0).to(20)
     end
   end
 end
