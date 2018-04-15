@@ -2,7 +2,6 @@ require 'rspec'
 require './movie_collection'
 require './theatre'
 require 'timecop'
-require 'date'
 
 RSpec.describe MyCinema::Theatre do
   before(:each) do
