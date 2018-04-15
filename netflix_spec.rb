@@ -2,12 +2,12 @@ require 'rspec'
 require './movie_collection'
 require './netflix'
 
-RSpec.describe Netflix do
+RSpec.describe MyCinema::Netflix do
   before(:each) do
-    movies = MovieCollection.new()
+    movies = MyCinema::MovieCollection.new()
     movies.read_from_file('movies.txt')
 
-    @netflix = Netflix.new(movies)
+    @netflix = MyCinema::Netflix.new(movies)
   end
 
   context ".show" do
@@ -23,11 +23,11 @@ RSpec.describe Netflix do
       movie = nil
       expect do
         movie = @netflix.show(genre: 'Comedy', period: :classic) 
-      end.to change { @netflix.account }.from(40).to(40 - @netflix.price(:classic))
+      end.to change { MyCinema::Netflix.cash }.from(40).to(40 - @netflix.price(:classic))
       
       expect(movie.genre).to include('Comedy')
       expect(movie.year).to be_between(1945, 1967).inclusive
-      expect(@netflix.account).to be < 40  
+      expect(MyCinema::Netflix.cash).to be < 40  
     end
   end
 
@@ -39,7 +39,18 @@ RSpec.describe Netflix do
 
   context ".pay" do
     it "should increase money on account" do
-      expect { @netflix.pay(40) }.to change { @netflix.account }.from(0).to(40)
+      cash_before = MyCinema::Netflix.cash
+      expect { @netflix.pay(40) }.to change { MyCinema::Netflix.cash }.from(cash_before).to(cash_before + 40)
+    end
+  end
+
+  context ".take" do
+    it "who = Bank" do
+      expect { MyCinema::Netflix.take("Bank") }.to output("encashment\n").to_stdout
+    end
+
+    it "who = suspicious person" do
+      expect { MyCinema::Netflix.take("somebody") }.to raise_error("u-u-u-u-u-u-u")
     end
   end
 end
