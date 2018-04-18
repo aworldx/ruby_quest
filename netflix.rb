@@ -2,7 +2,7 @@ require './cashbox'
 
 module MyCinema
   class Netflix
-    attr_reader :account
+    # attr_reader :account
     extend Cashbox
 
     def initialize(movie_collection)
@@ -26,11 +26,6 @@ module MyCinema
 
     def show_time(movie)
       "#{Time.now.strftime("%H:%M")} - #{(Time.now + movie.durability * 60).strftime("%H:%M")}"
-    end
-
-    def charge(movie_period)
-      cost = price(movie_period)
-      return Netflix.debit(cost)
     end
 
     def how_much?(movie_title)

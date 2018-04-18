@@ -1,15 +1,15 @@
 require './cashbox'
+require 'money'
 
 module MyCinema
   class Theatre
     include Cashbox
-    attr_reader :now_showing
 
     def initialize(movie_collection)
       @movie_collection = movie_collection
       @now_showing = nil
       @show_start = nil
-      # @cash = 0
+      @cash = Money.new(0, "USD")
     end
 
     def now_showing_movie
@@ -20,13 +20,17 @@ module MyCinema
     end
 
     def show
-      puts  "Theatre now showing: #{@now_showing[:movie].title} #{show_time}"
+      if @now_showing
+        puts  "Theatre now showing: #{@now_showing.title} #{show_time}"
+      else
+        puts "You have to buy the ticket first"
+      end
     end
 
     def show_time
-      rand_start = rand(@now_showing[:start])
-      "#{rand_start}:00 - #{rand_start + @now_showing[:movie].durability / 60}:"\
-        "#{(@now_showing[:movie].durability % 60).to_s.rjust(2, '0')}"
+      rand_start = rand(@show_start)
+      "#{rand_start}:00 - #{rand_start + @now_showing.durability / 60}:"\
+        "#{(@now_showing.durability % 60).to_s.rjust(2, '0')}"
     end
 
     def schedule
