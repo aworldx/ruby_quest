@@ -1,12 +1,22 @@
 require './cashbox'
+require 'money'
 
 module MyCinema
   class Netflix
-    # attr_reader :account
     extend Cashbox
+
+    class << self
+      attr_accessor :balance
+    end
+
+    self.balance = Money.new(0, "USD")
 
     def initialize(movie_collection)
       @movie_collection = movie_collection
+    end
+
+    def cash
+      self.class.balance
     end
 
     def show(options)
@@ -14,7 +24,7 @@ module MyCinema
       now_showing = movies.sort_by { |m| m.rate }.first
 
       if now_showing
-        raise "Insufficient funds on the account" unless charge(now_showing.period)
+        raise "Insufficient funds on the account" unless self.class.charge(now_showing.period)
 
         puts "Netflix now showing: #{now_showing.title} #{show_time(now_showing)}"
       else
@@ -22,6 +32,15 @@ module MyCinema
       end
 
       now_showing
+    end
+
+    def self.price(movie_period)
+      {
+        ancient: 5,
+        classic: 10,
+        modern: 15,
+        new: 20
+      }.fetch(movie_period)
     end
 
     def show_time(movie)
@@ -32,7 +51,7 @@ module MyCinema
       movie = @movie_collection.filter(title: movie_title).first
 
       if movie
-        puts "#{price(movie.period)} dollars"
+        puts "#{self.class.price(movie.period)} dollars"
       else
         puts "Sorry, we did not find the movie on your request"
       end

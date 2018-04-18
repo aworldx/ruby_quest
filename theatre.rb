@@ -5,11 +5,18 @@ module MyCinema
   class Theatre
     include Cashbox
 
+    attr_reader :now_showing
+    attr_accessor :balance
+
     def initialize(movie_collection)
       @movie_collection = movie_collection
       @now_showing = nil
       @show_start = nil
-      @cash = Money.new(0, "USD")
+      @balance = Money.new(0, "USD")
+    end
+
+    def cash
+      @balance
     end
 
     def now_showing_movie
@@ -39,6 +46,17 @@ module MyCinema
         13..20 => { genre: ['Comedy', 'Adventure'] },
         21..23 => { genre: ['Drama', 'Horror'] }
       }
+    end
+
+    def ticket_cost
+      case Time.now.hour
+      when 8..12
+        3
+      when 13..20
+        5
+      else
+        10
+      end
     end
 
     def when?(movie_title)

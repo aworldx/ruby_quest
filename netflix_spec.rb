@@ -12,22 +12,22 @@ RSpec.describe MyCinema::Netflix do
 
   context ".show" do
     it "raise error if no money" do
-      expect do 
+      expect do
         @netflix.show(genre: 'Comedy', period: :classic)
       end.to raise_error("Insufficient funds on the account")
     end
-    
+
     it "shows movies with passed attributes and reduce money on account" do
-      @netflix.pay(40) 
-      
+      MyCinema::Netflix.pay(40)
+
       movie = nil
       expect do
-        movie = @netflix.show(genre: 'Comedy', period: :classic) 
-      end.to change { MyCinema::Netflix.cash }.from(40).to(40 - @netflix.price(:classic))
-      
+        movie = @netflix.show(genre: 'Comedy', period: :classic)
+      end.to change { @netflix.cash.to_i }.from(40).to(40 - MyCinema::Netflix.price(:classic).to_i)
+
       expect(movie.genre).to include('Comedy')
       expect(movie.year).to be_between(1945, 1967).inclusive
-      expect(MyCinema::Netflix.cash).to be < 40  
+      expect(@netflix.cash.to_i).to be < 40
     end
   end
 
@@ -39,8 +39,8 @@ RSpec.describe MyCinema::Netflix do
 
   context ".pay" do
     it "should increase money on account" do
-      cash_before = MyCinema::Netflix.cash
-      expect { @netflix.pay(40) }.to change { MyCinema::Netflix.cash }.from(cash_before).to(cash_before + 40)
+      cash_before = @netflix.cash.to_i
+      expect { MyCinema::Netflix.pay(40) }.to change { @netflix.cash.to_i }.from(cash_before).to(cash_before + 40)
     end
   end
 
@@ -56,11 +56,14 @@ RSpec.describe MyCinema::Netflix do
 
   context ".cash" do
     it "should return common cash for all netflix" do
+      cash_before = @netflix.cash.to_i
+
       @netflix2 = MyCinema::Netflix.new(@movies)
-      expect do 
-        @netflix.pay(10)
-        @netflix2.pay(10)
-      end.to change { MyCinema::Netflix.cash }.from(0).to(20)
+
+      expect do
+        MyCinema::Netflix.pay(10)
+      end.to change { @netflix.cash.to_i }.from(cash_before).to(cash_before + 10)
+      .and change { @netflix2.cash.to_i }.from(cash_before).to(cash_before + 10)
     end
   end
 end
