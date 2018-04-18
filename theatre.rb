@@ -8,42 +8,19 @@ module MyCinema
     def initialize(movie_collection)
       @movie_collection = movie_collection
       @now_showing = nil
-      @cash = 0
+      @show_start = nil
+      # @cash = 0
     end
 
-    def buy_ticket   
-      top_up_balance(ticket_cost)
-      @now_showing = movie_by_hour(Time.new.hour)
-      puts "You bought the ticket on #{@now_showing[:movie].title} movie"
-    end
-
-    def movie_by_hour(hour)
-      schedule_item = schedule.select { |item| item === hour }
+    def now_showing_movie
+      schedule_item = schedule.select { |item| item === Time.new.hour }
       movies = @movie_collection.filter(schedule_item.values[0])
-      m = movies.sort_by { |m| m.rate }.first
-      {
-        movie: m,
-        start: schedule_item.keys.first
-      }
-    end
-
-    def ticket_cost
-      case Time.now.hour
-      when 8..12
-        3
-      when 13..20
-        5
-      else
-        10
-      end
+      @now_showing = movies.sort_by { |m| m.rate }.first
+      @show_start = schedule_item.keys.first
     end
 
     def show
-      if @now_showing
-        puts  "Theatre now showing: #{@now_showing[:movie].title} #{show_time}"
-      else
-        raise 'You have to buy a  ticket'
-      end
+      puts  "Theatre now showing: #{@now_showing[:movie].title} #{show_time}"
     end
 
     def show_time

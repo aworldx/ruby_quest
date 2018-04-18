@@ -28,19 +28,6 @@ module MyCinema
       "#{Time.now.strftime("%H:%M")} - #{(Time.now + movie.durability * 60).strftime("%H:%M")}"
     end
 
-    def pay(money)
-      Netflix.top_up_balance(money)
-    end
-
-    def price(movie_period)
-      {
-        ancient: 5,
-        classic: 10,
-        modern: 15,
-        new: 20
-      }.fetch(movie_period)
-    end
-
     def charge(movie_period)
       cost = price(movie_period)
       return Netflix.debit(cost)
