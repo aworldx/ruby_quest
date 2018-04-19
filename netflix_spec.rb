@@ -11,23 +11,14 @@ RSpec.describe MyCinema::Netflix do
   end
 
   context ".show" do
-    it "raise error if no money" do
-      expect do
-        @netflix.show(genre: 'Comedy', period: :classic)
-      end.to raise_error("Insufficient funds on the account")
-    end
-
-    it "shows movies with passed attributes and reduce money on account" do
-      MyCinema::Netflix.pay(40)
+    it "shows movies with passed attributes" do
+      @netflix.pay(40)
 
       movie = nil
-      expect do
-        movie = @netflix.show(genre: 'Comedy', period: :classic)
-      end.to change { @netflix.cash.to_i }.from(40).to(40 - MyCinema::Netflix.price(:classic).to_i)
+      movie = @netflix.show(genre: 'Comedy', period: :classic)
 
       expect(movie.genre).to include('Comedy')
       expect(movie.year).to be_between(1945, 1967).inclusive
-      expect(@netflix.cash.to_i).to be < 40
     end
   end
 
@@ -40,7 +31,7 @@ RSpec.describe MyCinema::Netflix do
   context ".pay" do
     it "should increase money on account" do
       cash_before = @netflix.cash.to_i
-      expect { MyCinema::Netflix.pay(40) }.to change { @netflix.cash.to_i }.from(cash_before).to(cash_before + 40)
+      expect { @netflix.pay(40) }.to change { @netflix.cash.to_i }.from(cash_before).to(cash_before + 40)
     end
   end
 
@@ -61,7 +52,7 @@ RSpec.describe MyCinema::Netflix do
       @netflix2 = MyCinema::Netflix.new(@movies)
 
       expect do
-        MyCinema::Netflix.pay(10)
+        @netflix.pay(10)
       end.to change { @netflix.cash.to_i }.from(cash_before).to(cash_before + 10)
       .and change { @netflix2.cash.to_i }.from(cash_before).to(cash_before + 10)
     end

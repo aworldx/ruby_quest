@@ -8,9 +8,9 @@ movies.read_from_file('movies.txt')
 netflix = MyCinema::Netflix.new(movies)
 netflix2 = MyCinema::Netflix.new(movies)
 
-MyCinema::Netflix.pay(10)
+netflix.pay(10)
 puts netflix.cash
-MyCinema::Netflix.pay(10)
+netflix2.pay(10)
 puts netflix.cash
 
 begin

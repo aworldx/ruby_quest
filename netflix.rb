@@ -19,13 +19,15 @@ module MyCinema
       self.class.balance
     end
 
+    def pay(money)
+      self.class.add_cash(money)
+    end
+
     def show(options)
       movies = @movie_collection.filter(options)
       now_showing = movies.sort_by { |m| m.rate }.first
 
       if now_showing
-        raise "Insufficient funds on the account" unless self.class.charge(now_showing.period)
-
         puts "Netflix now showing: #{now_showing.title} #{show_time(now_showing)}"
       else
         puts 'Sorry, we did not find the movie on your request'

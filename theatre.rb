@@ -19,6 +19,12 @@ module MyCinema
       @balance
     end
 
+    def buy_ticket
+      add_cash(ticket_cost)
+      now_showing_movie
+      puts "You bought the ticket on #{@now_showing.title} movie"
+    end
+
     def now_showing_movie
       schedule_item = schedule.select { |item| item === Time.new.hour }
       movies = @movie_collection.filter(schedule_item.values[0])
