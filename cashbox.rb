@@ -10,7 +10,7 @@ module Cashbox
   def take(who)
     if who == "Bank"
       puts 'encashment'
-      self.balance = format_amount(0)
+      self.balance = Money.new(0, "USD")
     else
       raise 'u-u-u-u-u-u-u'
     end
