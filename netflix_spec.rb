@@ -24,14 +24,14 @@ RSpec.describe MyCinema::Netflix do
 
   context ".how_much?" do
     it "should show how much money costs movie" do
-      expect { @netflix.how_much?('Forrest Gump') }.to output("15 dollars\n").to_stdout
+      expect { @netflix.how_much?('Forrest Gump') }.to output("15.00 dollars\n").to_stdout
     end
   end
 
   context ".pay" do
     it "should increase money on account" do
-      cash_before = @netflix.cash.to_i
-      expect { @netflix.pay(40) }.to change { @netflix.cash.to_i }.from(cash_before).to(cash_before + 40)
+      cash_before = @netflix.cash
+      expect { @netflix.pay(40) }.to change { @netflix.cash }.from(cash_before).to(cash_before + MyCinema::Netflix.format_amount(40))
     end
   end
 
@@ -47,14 +47,14 @@ RSpec.describe MyCinema::Netflix do
 
   context ".cash" do
     it "should return common cash for all netflix" do
-      cash_before = @netflix.cash.to_i
+      cash_before = @netflix.cash
 
       @netflix2 = MyCinema::Netflix.new(@movies)
 
       expect do
         @netflix.pay(10)
-      end.to change { @netflix.cash.to_i }.from(cash_before).to(cash_before + 10)
-      .and change { @netflix2.cash.to_i }.from(cash_before).to(cash_before + 10)
+      end.to change { @netflix.cash }.from(cash_before).to(cash_before + MyCinema::Netflix.format_amount(10))
+      .and change { @netflix2.cash }.from(cash_before).to(cash_before + MyCinema::Netflix.format_amount(10))
     end
   end
 end

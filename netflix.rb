@@ -9,7 +9,7 @@ module MyCinema
       attr_accessor :balance
     end
 
-    self.balance = Money.new(0, "USD")
+    self.balance = format_amount(0)
 
     def initialize(movie_collection)
       @movie_collection = movie_collection
@@ -37,12 +37,14 @@ module MyCinema
     end
 
     def self.price(movie_period)
-      {
+      price = {
         ancient: 5,
         classic: 10,
         modern: 15,
         new: 20
       }.fetch(movie_period)
+      
+      format_amount(price)
     end
 
     def show_time(movie)

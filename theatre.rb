@@ -5,14 +5,13 @@ module MyCinema
   class Theatre
     include Cashbox
 
-    attr_reader :now_showing
+    attr_reader :ticket
     attr_accessor :balance
 
     def initialize(movie_collection)
       @movie_collection = movie_collection
-      @now_showing = nil
-      @show_start = nil
-      @balance = Money.new(0, "USD")
+      @balance = format_amount(0)
+      @ticket = nil
     end
 
     def cash
@@ -21,23 +20,24 @@ module MyCinema
 
     def buy_ticket
       add_cash(ticket_cost)
-      now_showing_movie
-      puts "You bought the ticket on #{@now_showing.title} movie"
+      @ticket = now_showing_movie
+
+      puts "You bought the ticket on #{@ticket[:movie].title} movie"
     end
 
     def now_showing_movie
       schedule_item = schedule.select { |item| item === Time.new.hour }
       movies = @movie_collection.filter(schedule_item.values[0])
-      @now_showing = movies.sort_by { |m| m.rate }.first
-      @show_start = schedule_item.keys.first
+      
+      {
+        movie: movies.sort_by { |m| m.rate }.first,
+        start: schedule_item.keys.first
+      }
     end
 
     def show
-      if @now_showing
-        puts  "Theatre now showing: #{@now_showing.title} #{show_time}"
-      else
-        puts "You have to buy the ticket first"
-      end
+      raise "You have to buy the ticket first" unless @ticket
+      puts  "Theatre now showing: #{@ticket[:movie].title} #{@ticket[:start]}"
     end
 
     def show_time

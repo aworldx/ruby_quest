@@ -12,11 +12,15 @@ RSpec.describe MyCinema::Theatre do
   end
 
   context ".show" do
+    it "should raise without ticket" do
+      expect { @theatre.show }.to raise_error("You have to buy the ticket first")
+    end
+
     it "should show ancient movie in morning" do
       Timecop.freeze(Time.new(2018, 4, 15, 9)) do
         @theatre.buy_ticket
         @theatre.show
-        expect(@theatre.now_showing.period).to equal(:ancient)
+        expect(@theatre.ticket[:movie].period).to equal(:ancient)
       end
     end
 
@@ -24,7 +28,7 @@ RSpec.describe MyCinema::Theatre do
       Timecop.freeze(Time.new(2018, 4, 15, 13)) do
         @theatre.buy_ticket
         @theatre.show
-        expect(@theatre.now_showing.genre).to include('Comedy').or include('Adventure')
+        expect(@theatre.ticket[:movie].genre).to include('Comedy').or include('Adventure')
       end
     end
 
@@ -32,7 +36,7 @@ RSpec.describe MyCinema::Theatre do
       Timecop.freeze(Time.new(2018, 4, 15, 22)) do
         @theatre.buy_ticket
         @theatre.show
-        expect(@theatre.now_showing.genre).to include('Drama').or include('Horror')
+        expect(@theatre.ticket[:movie].genre).to include('Drama').or include('Horror')
       end
     end
   end
@@ -46,26 +50,26 @@ RSpec.describe MyCinema::Theatre do
 
   context ".buy_ticket" do
     it "should show info about ticket" do
-      @theatre.buy_ticket
+      afisha = @theatre.now_showing_movie
       expect { @theatre.buy_ticket }.to output("You bought the ticket on"\
-        " #{@theatre.now_showing.title} movie\n").to_stdout
+        " #{afisha[:movie].title} movie\n").to_stdout
     end
 
     it "should increase cash by 3 dollars in the morning" do
       Timecop.freeze(Time.new(2018, 4, 15, 9)) do
-        expect { @theatre.buy_ticket }.to change { @theatre.cash.to_i }.from(0).to(3)
+        expect { @theatre.buy_ticket }.to change { @theatre.cash }.from(@theatre.format_amount(0)).to(@theatre.format_amount(3))
       end
     end
 
     it "should increase cash by 5 dollars a day" do
       Timecop.freeze(Time.new(2018, 4, 15, 13)) do
-        expect { @theatre.buy_ticket }.to change { @theatre.cash.to_i }.from(0).to(5)
+        expect { @theatre.buy_ticket }.to change { @theatre.cash }.from(@theatre.format_amount(0)).to(@theatre.format_amount(5))
       end
     end
 
     it "should increase cash by 10 dollars in the evening" do
       Timecop.freeze(Time.new(2018, 4, 15, 22)) do
-        expect { @theatre.buy_ticket }.to change { @theatre.cash.to_i }.from(0).to(10)
+        expect { @theatre.buy_ticket }.to change { @theatre.cash }.from(@theatre.format_amount(0)).to(@theatre.format_amount(10))
       end
     end
   end
